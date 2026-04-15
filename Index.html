@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sostenibilità & Intelligenza Artificiale</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #1a2e1a;
+    --moss: #2d4a2d;
+    --sage: #4a7a4a;
+    --fern: #6aaa6a;
+    --mint: #a8d5a8;
+    --cream: #f5f0e8;
+    --parchment: #ede6d6;
+    --earth: #8b6914;
+    --amber: #c9921a;
+    --sky: #d4ecd4;
+    --white: #fafaf7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--forest);
+    color: var(--cream);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* ─── NOISE TEXTURE ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.6;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 4rem;
+    background: linear-gradient(to bottom, rgba(26,46,26,0.95), transparent);
+    backdrop-filter: blur(4px);
+  }
+
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mint);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--cream);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.3s, color 0.3s;
+  }
+
+  .nav-links a:hover { opacity: 1; color: var(--mint); }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-visual {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-visual svg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 5rem 5rem 4rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--fern);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 3rem;
+    height: 1px;
+    background: var(--fern);
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 5vw, 5.5rem);
+    font-weight: 300;
+    line-height: 1.05;
+    color: var(--white);
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--mint);
+  }
+
+  .hero-desc {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--cream);
+    opacity: 0.8;
+    max-width: 38ch;
+    margin-bottom: 3rem;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    background: transparent;
+    border: 1px solid var(--fern);
+    color: var(--mint);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 1rem 2rem;
+    text-decoration: none;
+    transition: all 0.4s;
+    cursor: pointer;
+  }
+
+  .hero-cta:hover {
+    background: var(--fern);
+    color: var(--forest);
+    border-color: var(--fern);
+  }
+
+  .hero-cta svg { transition: transform 0.3s; }
+  .hero-cta:hover svg { transform: translateX(4px); }
+
+  /* ─── FLOATING RINGS (decorative) ─── */
+  .ring-deco {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(106, 170, 106, 0.15);
+    pointer-events: none;
+  }
+
+  /* ─── SECTION BASE ─── */
+  section { padding: 8rem 0; }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 4rem;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--fern);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--fern), transparent);
+    max-width: 4rem;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 3.5vw, 3.5rem);
+    font-weight: 300;
+    line-height: 1.15;
+    color: var(--white);
+    margin-bottom: 1.5rem;
+  }
+
+  .section-title em {
+    font-style: italic;
+    color: var(--mint);
+  }
+
+  /* ─── INTRO ─── */
+  .intro {
+    background: var(--moss);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .intro::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(74,122,74,0.2) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .intro-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+  }
+
+  .intro-text p {
+    font-size: 1rem;
+    line-height: 1.9;
+    color: var(--cream);
+    opacity: 0.85;
+    margin-bottom: 1.5rem;
+  }
+
+  .intro-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--mint);
+    border-left: 2px solid var(--fern);
+    padding-left: 2rem;
+  }
+
+  /* ─── PILLARS ─── */
+  .pillars { background: var(--forest); }
+
+  .pillars-header {
+    text-align: center;
+    margin-bottom: 5rem;
+  }
+
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .pillar-card {
+    background: var(--moss);
+    padding: 3rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.4s;
+    cursor: default;
+  }
+
+  .pillar-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(to right, var(--sage), var(--fern));
+    transform: scaleX(0);
+    transition: transform 0.4s;
+    transform-origin: left;
+  }
+
+  .pillar-card:hover { background: rgba(74,122,74,0.3); }
+  .pillar-card:hover::before { transform: scaleX(1); }
+
+  .pillar-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--sage);
+    margin-bottom: 1.5rem;
+  }
+
+  .pillar-icon {
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 1.5rem;
+    color: var(--fern);
+  }
+
+  .pillar-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--white);
+    margin-bottom: 1rem;
+  }
+
+  .pillar-text {
+    font-size: 0.88rem;
+    line-height: 1.75;
+    color: var(--cream);
+    opacity: 0.75;
+  }
+
+  /* ─── STATS ─── */
+  .stats {
+    background: linear-gradient(135deg, var(--moss) 0%, var(--forest) 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stats::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 40px,
+      rgba(74,122,74,0.03) 40px,
+      rgba(74,122,74,0.03) 41px
+    );
+    pointer-events: none;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stat-item { text-align: center; }
+
+  .stat-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 5vw, 4.5rem);
+    font-weight: 300;
+    color: var(--mint);
+    line-height: 1;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--cream);
+    opacity: 0.6;
+    line-height: 1.5;
+  }
+
+  /* ─── PRINCIPLES ─── */
+  .principles { background: var(--moss); }
+
+  .principles-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 6rem;
+    align-items: start;
+  }
+
+  .principles-sticky {
+    position: sticky;
+    top: 8rem;
+  }
+
+  .principles-list { display: flex; flex-direction: column; gap: 0; }
+
+  .principle-item {
+    border-top: 1px solid rgba(106,170,106,0.2);
+    padding: 2rem 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2rem;
+    align-items: start;
+    transition: all 0.3s;
+  }
+
+  .principle-item:last-child { border-bottom: 1px solid rgba(106,170,106,0.2); }
+
+  .principle-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--sage);
+    padding-top: 0.15rem;
+    letter-spacing: 0.1em;
+  }
+
+  .principle-body {}
+
+  .principle-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    color: var(--white);
+    margin-bottom: 0.75rem;
+  }
+
+  .principle-desc {
+    font-size: 0.88rem;
+    line-height: 1.75;
+    color: var(--cream);
+    opacity: 0.7;
+  }
+
+  /* ─── CHALLENGES ─── */
+  .challenges { background: var(--forest); }
+
+  .challenges-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 4rem;
+  }
+
+  .challenge-card {
+    padding: 3rem;
+    background: var(--moss);
+    position: relative;
+  }
+
+  .challenge-card.accent { background: var(--sage); }
+
+  .challenge-tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    background: rgba(168,213,168,0.15);
+    color: var(--mint);
+    padding: 0.3rem 0.8rem;
+    margin-bottom: 1.5rem;
+    border-radius: 2px;
+  }
+
+  .challenge-card.accent .challenge-tag {
+    background: rgba(26,46,26,0.3);
+    color: var(--forest);
+  }
+
+  .challenge-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--white);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .challenge-card.accent .challenge-title { color: var(--forest); }
+
+  .challenge-text {
+    font-size: 0.9rem;
+    line-height: 1.75;
+    color: var(--cream);
+    opacity: 0.8;
+  }
+
+  .challenge-card.accent .challenge-text { color: var(--forest); opacity: 0.85; }
+
+  /* ─── FUTURE ─── */
+  .future {
+    background: var(--moss);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .future::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(106,170,106,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .future-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .future-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--white);
+    margin-bottom: 2rem;
+  }
+
+  .future-title em { font-style: italic; color: var(--mint); }
+
+  .future-text {
+    max-width: 60ch;
+    margin: 0 auto 3rem;
+    font-size: 1rem;
+    line-height: 1.85;
+    opacity: 0.8;
+    color: var(--cream);
+  }
+
+  .future-rings {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .future-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(106,170,106,0.1);
+    transform: translate(-50%, -50%);
+    animation: pulse 4s ease-in-out infinite;
+  }
+
+  .future-ring:nth-child(1) { width: 300px; height: 300px; animation-delay: 0s; }
+  .future-ring:nth-child(2) { width: 500px; height: 500px; animation-delay: 0.7s; }
+  .future-ring:nth-child(3) { width: 700px; height: 700px; animation-delay: 1.4s; }
+  .future-ring:nth-child(4) { width: 900px; height: 900px; animation-delay: 2.1s; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.02); }
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--forest);
+    border-top: 1px solid rgba(106,170,106,0.15);
+    padding: 3rem 0;
+  }
+
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    color: var(--mint);
+    letter-spacing: 0.1em;
+  }
+
+  .footer-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: var(--cream);
+    opacity: 0.4;
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .fade-in-delay-1 { transition-delay: 0.1s; }
+  .fade-in-delay-2 { transition-delay: 0.2s; }
+  .fade-in-delay-3 { transition-delay: 0.3s; }
+  .fade-in-delay-4 { transition-delay: 0.4s; }
+  .fade-in-delay-5 { transition-delay: 0.5s; }
+  .fade-in-delay-6 { transition-delay: 0.6s; }
+
+  @media (max-width: 900px) {
+    nav { padding: 1.5rem 2rem; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; }
+    .hero-visual { display: none; }
+    .hero-content { padding: 7rem 2rem 4rem; }
+    .container { padding: 0 2rem; }
+    .intro-grid,
+    .pillars-grid,
+    .challenges-grid,
+    .principles-layout { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    section { padding: 5rem 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">IA Sostenibile</div>
+  <ul class="nav-links">
+    <li><a href="#intro">Contesto</a></li>
+    <li><a href="#pillars">Pilastri</a></li>
+    <li><a href="#sfide">Sfide</a></li>
+    <li><a href="#principi">Principi</a></li>
+    <li><a href="#futuro">Futuro</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-visual">
+    <svg viewBox="0 0 600 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <radialGradient id="rg1" cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stop-color="#4a7a4a" stop-opacity="0.4"/>
+          <stop offset="100%" stop-color="#1a2e1a" stop-opacity="1"/>
+        </radialGradient>
+        <filter id="blur1"><feGaussianBlur stdDeviation="3"/></filter>
+      </defs>
+      <rect width="600" height="900" fill="url(#rg1)"/>
+      <!-- Abstract leaf / circuit hybrid -->
+      <g opacity="0.4" stroke="#6aaa6a" stroke-width="0.5" fill="none">
+        <!-- Central vertical trunk -->
+        <line x1="300" y1="900" x2="300" y2="200"/>
+        <!-- Branches left -->
+        <line x1="300" y1="700" x2="180" y2="580"/>
+        <line x1="300" y1="600" x2="140" y2="480"/>
+        <line x1="300" y1="500" x2="170" y2="380"/>
+        <line x1="300" y1="400" x2="200" y2="300"/>
+        <!-- Branches right -->
+        <line x1="300" y1="700" x2="420" y2="580"/>
+        <line x1="300" y1="600" x2="460" y2="480"/>
+        <line x1="300" y1="500" x2="430" y2="380"/>
+        <line x1="300" y1="400" x2="400" y2="300"/>
+      </g>
+      <!-- Circuit nodes -->
+      <g fill="#6aaa6a" opacity="0.5">
+        <circle cx="300" cy="700" r="4"/>
+        <circle cx="300" cy="600" r="4"/>
+        <circle cx="300" cy="500" r="4"/>
+        <circle cx="300" cy="400" r="4"/>
+        <circle cx="180" cy="580" r="3"/>
+        <circle cx="140" cy="480" r="3"/>
+        <circle cx="170" cy="380" r="3"/>
+        <circle cx="200" cy="300" r="3"/>
+        <circle cx="420" cy="580" r="3"/>
+        <circle cx="460" cy="480" r="3"/>
+        <circle cx="430" cy="380" r="3"/>
+        <circle cx="400" cy="300" r="3"/>
+        <circle cx="300" cy="200" r="6"/>
+      </g>
+      <!-- Leaf shapes at endpoints -->
+      <g opacity="0.25" fill="#a8d5a8">
+        <ellipse cx="180" cy="580" rx="20" ry="10" transform="rotate(-45 180 580)"/>
+        <ellipse cx="140" cy="480" rx="22" ry="11" transform="rotate(-60 140 480)"/>
+        <ellipse cx="170" cy="380" rx="18" ry="9" transform="rotate(-50 170 380)"/>
+        <ellipse cx="200" cy="300" rx="20" ry="10" transform="rotate(-40 200 300)"/>
+        <ellipse cx="420" cy="580" rx="20" ry="10" transform="rotate(45 420 580)"/>
+        <ellipse cx="460" cy="480" rx="22" ry="11" transform="rotate(60 460 480)"/>
+        <ellipse cx="430" cy="380" rx="18" ry="9" transform="rotate(50 430 380)"/>
+        <ellipse cx="400" cy="300" rx="20" ry="10" transform="rotate(40 400 300)"/>
+        <ellipse cx="300" cy="200" rx="30" ry="15"/>
+      </g>
+      <!-- Decorative concentric rings at center top -->
+      <g opacity="0.12" stroke="#a8d5a8" stroke-width="0.8" fill="none">
+        <circle cx="300" cy="200" r="60"/>
+        <circle cx="300" cy="200" r="100"/>
+        <circle cx="300" cy="200" r="150"/>
+      </g>
+    </svg>
+  </div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Strategia Nazionale per l'IA · Principio</div>
+    <h1 class="hero-title">
+      La <em>Sostenibilità</em><br>
+      nell'era<br>
+      dell'Intelligenza<br>
+      Artificiale
+    </h1>
+    <p class="hero-desc">
+      L'IA deve essere uno strumento al servizio del pianeta, non un peso. Esplorare come tecnologia e natura possano coesistere in armonia è la sfida del nostro tempo.
+    </p>
+    <a href="#intro" class="hero-cta">
+      Scopri il principio
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 3L8 13M8 13L13 8M8 13L3 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </div>
+</section>
+
+<!-- INTRO -->
+<section class="intro" id="intro">
+  <div class="container">
+    <div class="intro-grid">
+      <div class="intro-text fade-in">
+        <div class="section-label">Il Contesto</div>
+        <h2 class="section-title">Perché la <em>sostenibilità</em> è centrale</h2>
+        <p>
+          L'introduzione dell'Intelligenza Artificiale nella società porta con sé opportunità straordinarie ma anche responsabilità altrettanto significative. Tra i principi fondanti della strategia nazionale sull'IA, la sostenibilità occupa un posto di primo piano.
+        </p>
+        <p>
+          Essa non riguarda soltanto l'impatto ambientale dei sistemi computazionali, ma abbraccia una visione più ampia: quella di uno sviluppo tecnologico che sia socialmente equo, economicamente duraturo ed ecologicamente compatibile con i limiti del nostro pianeta.
+        </p>
+      </div>
+      <div class="fade-in fade-in-delay-2">
+        <blockquote class="intro-quote">
+          "Uno sviluppo tecnologico che rispetti i limiti planetari non è un vincolo, ma la condizione stessa per un futuro possibile."
+        </blockquote>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item fade-in">
+        <span class="stat-number">3×</span>
+        <span class="stat-label">Consumo energetico<br>dei data center al 2030</span>
+      </div>
+      <div class="stat-item fade-in fade-in-delay-1">
+        <span class="stat-number">60%</span>
+        <span class="stat-label">Riduzione emissioni<br>possibile con IA verde</span>
+      </div>
+      <div class="stat-item fade-in fade-in-delay-2">
+        <span class="stat-number">2050</span>
+        <span class="stat-label">Obiettivo neutralità<br>carbonica europea</span>
+      </div>
+      <div class="stat-item fade-in fade-in-delay-3">
+        <span class="stat-number">17</span>
+        <span class="stat-label">Obiettivi di sviluppo<br>sostenibile dell'ONU</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PILLARS -->
+<section class="pillars" id="pillars">
+  <div class="container">
+    <div class="pillars-header">
+      <div class="section-label" style="justify-content:center">I Tre Pilastri</div>
+      <h2 class="section-title">Sostenibilità come <em>sistema</em></h2>
+    </div>
+    <div class="pillars-grid">
+      <div class="pillar-card fade-in">
+        <div class="pillar-number">01 — Ambientale</div>
+        <svg class="pillar-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M24 4C24 4 8 14 8 28C8 36.837 15.163 44 24 44C32.837 44 40 36.837 40 28C40 14 24 4 24 4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M24 44V24M24 24L16 16M24 24L32 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h3 class="pillar-title">Sostenibilità Ambientale</h3>
+        <p class="pillar-text">
+          Riduzione dell'impronta ecologica dei sistemi IA: efficienza energetica, uso di energie rinnovabili per i data center, minimizzazione dei rifiuti elettronici e gestione responsabile delle risorse hardware lungo tutto il ciclo di vita.
+        </p>
+      </div>
+      <div class="pillar-card fade-in fade-in-delay-2">
+        <div class="pillar-number">02 — Sociale</div>
+        <svg class="pillar-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="16" r="8" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M8 40C8 32.268 15.163 26 24 26C32.837 26 40 32.268 40 40" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="12" cy="20" r="5" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="36" cy="20" r="5" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        <h3 class="pillar-title">Sostenibilità Sociale</h3>
+        <p class="pillar-text">
+          L'IA deve rafforzare il tessuto sociale senza escludere né marginalizzare. Coinvolgimento delle comunità, formazione continua, inclusione dei gruppi vulnerabili e protezione dei lavoratori nelle trasformazioni del mercato del lavoro.
+        </p>
+      </div>
+      <div class="pillar-card fade-in fade-in-delay-4">
+        <div class="pillar-number">03 — Economica</div>
+        <svg class="pillar-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polyline points="8,36 18,24 26,30 40,14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="8" cy="36" r="2.5" fill="currentColor"/>
+          <circle cx="18" cy="24" r="2.5" fill="currentColor"/>
+          <circle cx="26" cy="30" r="2.5" fill="currentColor"/>
+          <circle cx="40" cy="14" r="2.5" fill="currentColor"/>
+        </svg>
+        <h3 class="pillar-title">Sostenibilità Economica</h3>
+        <p class="pillar-text">
+          Crescita duratura e distribuita. Modelli di business che non scaricano costi nascosti sulla società, finanziamento pubblico di infrastrutture condivise, accesso equo all'innovazione per le PMI e le realtà territoriali.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRINCIPI APPLICATIVI -->
+<section class="principles" id="principi">
+  <div class="container">
+    <div class="principles-layout">
+      <div class="principles-sticky fade-in">
+        <div class="section-label">Principi Operativi</div>
+        <h2 class="section-title">Come <em>applicare</em> la sostenibilità all'IA</h2>
+        <p style="font-size:0.9rem;line-height:1.8;opacity:0.7;color:var(--cream);margin-top:1.5rem;">
+          Tradurre il principio di sostenibilità in azioni concrete richiede linee guida operative che guidino sviluppatori, enti pubblici e imprese nel processo di adozione dell'IA.
+        </p>
+      </div>
+      <div class="principles-list">
+        <div class="principle-item fade-in">
+          <span class="principle-num">01</span>
+          <div class="principle-body">
+            <h3 class="principle-name">Life Cycle Assessment (LCA)</h3>
+            <p class="principle-desc">
+              Ogni sistema IA deve essere valutato per il suo impatto sull'intero ciclo di vita: dalla produzione hardware all'addestramento dei modelli, dal deployment alla dismissione. La trasparenza sui consumi energetici deve diventare uno standard obbligatorio.
+            </p>
+          </div>
+        </div>
+        <div class="principle-item fade-in fade-in-delay-1">
+          <span class="principle-num">02</span>
+          <div class="principle-body">
+            <h3 class="principle-name">Green by Design</h3>
+            <p class="principle-desc">
+              La sostenibilità deve essere progettata fin dall'inizio, non aggiunta come appendice. Modelli efficienti, architetture leggere, ottimizzazione degli hyperparameter per ridurre il costo computazionale senza sacrificare le prestazioni.
+            </p>
+          </div>
+        </div>
+        <div class="principle-item fade-in fade-in-delay-2">
+          <span class="principle-num">03</span>
+          <div class="principle-body">
+            <h3 class="principle-name">IA per la Transizione Ecologica</h3>
+            <p class="principle-desc">
+              L'IA non è solo un problema ambientale, ma una soluzione. Monitoraggio climatico, ottimizzazione delle reti energetiche, agricoltura di precisione, gestione intelligente dei rifiuti: le applicazioni sostenibili dell'IA sono già realtà.
+            </p>
+          </div>
+        </div>
+        <div class="principle-item fade-in fade-in-delay-3">
+          <span class="principle-num">04</span>
+          <div class="principle-body">
+            <h3 class="principle-name">Governance Partecipativa</h3>
+            <p class="principle-desc">
+              Le decisioni sullo sviluppo dell'IA sostenibile non possono essere prese solo da esperti tecnici. Servono tavoli multistakeholder, processi di consultazione pubblica, e meccanismi che diano voce alle generazioni future.
+            </p>
+          </div>
+        </div>
+        <div class="principle-item fade-in fade-in-delay-4">
+          <span class="principle-num">05</span>
+          <div class="principle-body">
+            <h3 class="principle-name">Rendicontazione e Accountability</h3>
+            <p class="principle-desc">
+              Organizzazioni pubbliche e private devono rendicontare periodicamente l'impatto dei loro sistemi IA rispetto a metriche di sostenibilità condivise, seguendo framework internazionali come il GRI e gli standard ISO per l'IA responsabile.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SFIDE -->
+<section class="challenges" id="sfide">
+  <div class="container">
+    <div class="section-label">Le Sfide</div>
+    <h2 class="section-title">Tensioni da <em>navigare</em></h2>
+    <div class="challenges-grid">
+      <div class="challenge-card fade-in">
+        <span class="challenge-tag">Efficienza vs Accuratezza</span>
+        <h3 class="challenge-title">Il trade-off tra prestazioni e impatto energetico</h3>
+        <p class="challenge-text">
+          I modelli di IA più potenti richiedono risorse computazionali enormi. Trovare il punto di equilibrio tra qualità dei risultati e sostenibilità non è banale: richiede ricerca in architetture efficienti, pruning, quantizzazione e tecniche di transfer learning.
+        </p>
+      </div>
+      <div class="challenge-card accent fade-in fade-in-delay-1">
+        <span class="challenge-tag">Opportunità</span>
+        <h3 class="challenge-title">IA come acceleratore della sostenibilità</h3>
+        <p class="challenge-text">
+          Il paradosso virtuoso: sebbene l'IA consumi risorse, può ottimizzare sistemi molto più energivori. La riduzione del consumo globale di energia ottenuta tramite edifici intelligenti, reti elettriche ottimizzate e logistica sostenibile supera ampiamente il costo dei sistemi IA stessi.
+        </p>
+      </div>
+      <div class="challenge-card accent fade-in fade-in-delay-2">
+        <span class="challenge-tag">Rischio</span>
+        <h3 class="challenge-title">Effetto rebound e concentrazione di potere</h3>
+        <p class="challenge-text">
+          L'efficienza portata dall'IA può paradossalmente aumentare i consumi totali (effetto Jevons). Inoltre, la concentrazione delle infrastrutture IA in poche grandi aziende crea dipendenze strutturali e riduce la capacità degli stati di perseguire autonomi obiettivi di sostenibilità.
+        </p>
+      </div>
+      <div class="challenge-card fade-in fade-in-delay-3">
+        <span class="challenge-tag">Governance</span>
+        <h3 class="challenge-title">Standard internazionali e coordinamento europeo</h3>
+        <p class="challenge-text">
+          La sostenibilità dell'IA richiede un approccio sistemico e coordinato a livello europeo e globale. L'AI Act europeo pone basi importanti, ma mancano ancora standard armonizzati per misurare e certificare l'impronta ambientale e sociale dei sistemi IA.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FUTURO -->
+<section class="future" id="futuro">
+  <div class="future-rings">
+    <div class="future-ring"></div>
+    <div class="future-ring"></div>
+    <div class="future-ring"></div>
+    <div class="future-ring"></div>
+  </div>
+  <div class="container">
+    <div class="future-content fade-in">
+      <div class="section-label" style="justify-content:center">La Visione</div>
+      <h2 class="future-title">
+        Un'IA che nutre<br>il pianeta che <em>la ospita</em>
+      </h2>
+      <p class="future-text">
+        La sostenibilità nell'IA non è un limite da accettare con rassegnazione: è la condizione affinché questa tecnologia possa esprimere il suo potenziale trasformativo sul lungo periodo. Sistemi che consumano senza restituire, che crescono senza considerare i confini planetari, sono sistemi destinati a fallire — e a portare con sé le istituzioni e le comunità che li hanno adottati acriticamente.
+      </p>
+      <p class="future-text" style="font-size:0.9rem;opacity:0.65;">
+        Il principio di sostenibilità chiede a tutti gli attori — enti pubblici, aziende, ricercatori, cittadini — di essere custodi responsabili di una tecnologia che appartiene al futuro collettivo.
+      </p>
+      <a href="#intro" class="hero-cta" style="display:inline-flex;margin:0 auto;">
+        Torna all'inizio
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 13L8 3M8 3L3 8M8 3L13 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">IA Sostenibile</div>
+      <div class="footer-note">
+        Documento individuale · Strategia Nazionale IA<br>
+        Principio: Sostenibilità · 2025–2026
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Intersection Observer for fade-in animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
